@@ -19,15 +19,23 @@ This package contains everything needed to set up a skill system in any Claude C
 
 ### 1. Installation
 
-Copy this directory to your project and run the installation script:
+Clone the repository and run the installation script:
 
 ```bash
-# Copy the skill-keyword-manager directory to your project
-cp -r /path/to/skill-keyword-manager /your/project/.claude/skills/
+# Clone the repository
+git clone https://github.com/ztffn/claude-skill-manager.git
+cd claude-skill-manager
 
-# Run the installation script
-cd /your/project
-./.claude/skills/skill-keyword-manager/scripts/install-skill-system.sh
+# Install to your project
+./install.sh /path/to/your/project
+```
+
+Or install directly to current directory:
+
+```bash
+# Clone and install in current project
+git clone https://github.com/ztffn/claude-skill-manager.git
+./claude-skill-manager/install.sh .
 ```
 
 ### 2. Restart Claude Code
