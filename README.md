@@ -168,8 +168,8 @@ When creating skills for this system, follow these guidelines:
 # Good: Generic, reusable
 This skill helps optimize React components for performance.
 
-# Bad: Project-specific
-This skill optimizes the Lions Club delivery app components.
+# Bad: Project-specific  
+This skill optimizes the MyCompany e-commerce app components.
 ```
 
 ### 2. Configurable Paths
@@ -178,7 +178,7 @@ This skill optimizes the Lions Club delivery app components.
 Check the `src/components/` directory for existing patterns.
 
 # Bad: Absolute paths
-Look at `/Users/steffen/Projects/LionsApp/components/`
+Look at `/Users/username/Projects/MyApp/components/`
 ```
 
 ### 3. Technology Agnostic

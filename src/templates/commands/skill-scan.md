@@ -89,10 +89,10 @@ fi`
 ### 4. Project-Specific Content
 
 !`echo "=== Scanning for Project-Specific References ==="
-find .claude/skills -name "*.md" | xargs grep -l -i "lions\|relivator\|steffen" | while read file; do
+find .claude/skills -name "*.md" | xargs grep -l -i "mycompany\|myapp\|username" | while read file; do
     skill=$(basename "$(dirname "$file")")
     echo "⚠️  $skill contains project-specific content:"
-    grep -n -i "lions\|relivator\|steffen" "$file" | head -3
+    grep -n -i "mycompany\|myapp\|username" "$file" | head -3
     echo ""
 done`
 

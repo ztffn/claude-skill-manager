@@ -23,7 +23,7 @@ When triggered by this skill, Claude performs intelligent analysis of skill desc
 - AVOID: "react", "component", "database", "api", "app", "user", "system", "code", "file", "data"
 - PREFER: Specific technologies like "useEffect", "drizzle", "vipps", "geonorge", "vercel", "nextjs"
 - Programming languages, frameworks, tools, services with version specificity when relevant
-- Project-specific terminology (shadcn, Norwegian, Lions, etc.)
+- Project-specific terminology (company names, domain-specific terms, etc.)
 
 **Natural Language Triggers:** COMPOUND PHRASES that uniquely identify the skill intent
 - PRIORITY: Multi-word phrases like "explain how this works", "deploy to production", "fix useEffect abuse"
