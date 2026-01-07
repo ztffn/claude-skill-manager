@@ -1,0 +1,25 @@
+{
+  "_description": "Skill system configuration template - copy to .claude/skill-config.json and customize",
+  "project_root": "auto-detect",
+  "paths": {
+    "skills_dir": "skills",
+    "logs_dir": "logs", 
+    "hooks_dir": "hooks",
+    "keyword_file": "skills/skill-keywords.json"
+  },
+  "hook_settings": {
+    "enable_logging": true,
+    "skill_threshold": 14,
+    "log_file": "logs/skill-activation.log"
+  },
+  "project_info": {
+    "name": "auto-detect",
+    "tech_stack": [],
+    "domain": "general"
+  },
+  "compatibility": {
+    "version": "1.0.0", 
+    "required_tools": ["bash", "jq", "python3"],
+    "optional_tools": []
+  }
+}
