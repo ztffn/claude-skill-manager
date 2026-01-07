@@ -1,4 +1,4 @@
-# Claude Code Skill System - Portable Package
+# Claude Code Skill System 
 
 A complete, self-contained skill management system for Claude Code that provides intelligent skill activation through keyword analysis and AI-powered maintenance.
 
