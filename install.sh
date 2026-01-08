@@ -20,10 +20,27 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 # Detect project root (look for common project indicators)
 detect_project_root() {
     local current_dir="$(pwd)"
+    
+    # Primary case: if we're in .claude/skills directory, derive project root
+    if [[ "$current_dir" == *"/.claude/skills"* ]]; then
+        # Extract project root by removing /.claude/skills and everything after
+        local project_root="${current_dir%/.claude/skills*}"
+        if [[ -n "$project_root" ]] && [[ -d "$project_root" ]]; then
+            echo "$project_root"
+            return 0
+        fi
+    fi
+    
     local search_dir="$current_dir"
     
-    # Look for project indicators
+    # Look for project indicators, but skip .claude/skills directories
     while [[ "$search_dir" != "/" ]]; do
+        # Skip if we're in a .claude/skills subdirectory
+        if [[ "$search_dir" == *"/.claude/skills"* ]]; then
+            search_dir="$(dirname "$search_dir")"
+            continue
+        fi
+        
         if [[ -f "$search_dir/package.json" ]] || \
            [[ -f "$search_dir/pyproject.toml" ]] || \
            [[ -f "$search_dir/Cargo.toml" ]] || \
@@ -110,27 +127,55 @@ create_directories() {
 
 # Copy skill system files
 copy_skill_system() {
-    local source_dir="$(dirname "$0")/.."
-    local claude_dir="$1"
+    local script_dir="$(dirname "$0")"
+    local source_dir="$(realpath "$script_dir")"
+    local claude_dir="$(realpath "$1")"
+    local project_root="$(realpath "$1")"
     
     log_info "Installing skill system files..."
     
-    # Copy the entire skill-keyword-manager 
-    cp -r "$source_dir" "$claude_dir/skills/"
+    # Guardrail 1: Prevent infinite recursion - don't copy project root into itself
+    if [[ "$source_dir" == "$project_root" ]]; then
+        log_error "Cannot install: Would create infinite recursion"
+        log_error "Script location: $source_dir"
+        log_error "Project root: $project_root"
+        log_info "Solution: Run install script from skill manager directory, not project root"
+        exit 1
+    fi
+    
+    # Check if we're already in the target .claude/skills/ directory
+    if [[ "$source_dir" == *"/.claude/skills/"* ]]; then
+        log_info "Skill manager already in .claude/skills/ - setting up hooks and config only"
+        local skill_manager_dir="$source_dir"
+    else
+        # Guardrail 2: Don't overwrite existing installation without confirmation
+        if [[ -d "$claude_dir/skills/skill-keyword-manager" ]]; then
+            log_warning "Skill manager already exists at $claude_dir/skills/skill-keyword-manager"
+            log_info "Use --force flag to overwrite existing installation"
+            exit 1
+        fi
+        
+        # Copy the skill manager to .claude/skills/
+        log_info "Copying skill manager to .claude/skills/"
+        cp -r "$source_dir" "$claude_dir/skills/skill-keyword-manager"
+        local skill_manager_dir="$claude_dir/skills/skill-keyword-manager"
+    fi
     
     # Copy hook script to hooks directory
-    cp "$source_dir/references/skill-forced-eval-hook.sh" "$claude_dir/hooks/"
+    [[ ! -d "$claude_dir/hooks" ]] && mkdir -p "$claude_dir/hooks"
+    cp "$skill_manager_dir/src/references/skill-forced-eval-hook.sh" "$claude_dir/hooks/"
     
     # Copy skill management slash commands
-    if [[ -d "$source_dir/templates/commands" ]]; then
-        mkdir -p "$claude_dir/commands"
-        cp "$source_dir/templates/commands/"*.md "$claude_dir/commands/"
+    if [[ -d "$skill_manager_dir/src/templates/commands" ]]; then
+        [[ ! -d "$claude_dir/commands" ]] && mkdir -p "$claude_dir/commands"
+        cp "$skill_manager_dir/src/templates/commands/"*.md "$claude_dir/commands/"
         log_info "Installed skill management slash commands"
     fi
     
     # Create initial keyword file if it doesn't exist
-    if [[ ! -f "$claude_dir/skills/skill-keywords.json" ]]; then
-        echo '{"_last_updated": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'", "_version": "1.0.0"}' > "$claude_dir/skills/skill-keywords.json"
+    [[ ! -d "$skill_manager_dir/references" ]] && mkdir -p "$skill_manager_dir/references"
+    if [[ ! -f "$skill_manager_dir/references/skill-keywords.json" ]]; then
+        echo '{"_last_updated": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'", "_version": "1.0.0"}' > "$skill_manager_dir/references/skill-keywords.json"
     fi
     
     log_success "Skill system files installed"
@@ -154,7 +199,7 @@ create_configuration() {
     "skills_dir": "skills",
     "logs_dir": "logs",
     "hooks_dir": "hooks", 
-    "keyword_file": "skills/skill-keywords.json"
+    "keyword_file": "skills/skill-keyword-manager/references/skill-keywords.json"
   },
   "hook_settings": {
     "enable_logging": true,
