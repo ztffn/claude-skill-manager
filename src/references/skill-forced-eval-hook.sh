@@ -264,6 +264,7 @@ if [[ $best_score -ge $SKILL_THRESHOLD ]]; then
         echo "2. EVALUATE: Which skills are most appropriate for this specific task?"
         echo "3. CHOOSE: Select 1-3 skills that best match the user's intent"
         echo "4. ACTIVATE: Use Skill() tool for your chosen skills before proceeding"
+        echo "5. IGNORE: If no skills seem to be relevant, do not activate any skills, just proceed with the task."
         echo ""
         
         # JSON output with systemMessage for user notification
