@@ -70,9 +70,8 @@ def extract_frontmatter(skill_md_path: Path) -> Optional[Dict]:
         return None
 
 def generate_keywords_with_ai(name: str, description: str) -> Dict[str, List[str]]:
-    """This function should be called from within Claude Code to use the Task tool."""
-    # This script is designed to be run FROM within a Claude Code session
-    # so that each skill can trigger the skill-keyword-manager agent
+    """Generate keywords using Claude Code Agent SDK to trigger skill-keyword-manager agent."""
+    # Uses 'claude -p' to programmatically run Claude Code and trigger the skill manager agent
     
     print(f"\n🤖 Generating keywords for: {name}")
     print(f"Description: {description}")
@@ -97,26 +96,58 @@ Generate keywords in exactly this JSON format:
 
 Only return the JSON, no other text."""
     
-    # Write the prompt to a file that Claude Code can pick up
-    request_file = f"/tmp/keyword_request_{name.replace('-', '_')}.txt"
+    # Use Claude Code Agent SDK to generate keywords
+    try:
+        print(f"🔄 Running Claude Code Agent SDK...")
+        result = subprocess.run([
+            'claude', '-p', 
+            f"Use Skill(skill-keyword-manager) to generate keywords for skill '{name}' with description: '{description}'. Return JSON with keys: actions, technology, triggers, name_variants",
+            '--output-format', 'json',
+            '--allowedTools', 'Task'
+        ], capture_output=True, text=True, timeout=120)
+        
+        if result.returncode == 0:
+            response = json.loads(result.stdout)
+            
+            # Try to extract keywords from the response
+            if 'structured_output' in response:
+                keywords = response['structured_output']
+            elif 'result' in response:
+                # Try to parse JSON from the result text
+                import re
+                json_match = re.search(r'\{.*\}', response['result'], re.DOTALL)
+                if json_match:
+                    keywords = json.loads(json_match.group())
+                else:
+                    keywords = {}
+            else:
+                keywords = {}
+            
+            # Ensure all required keys exist
+            for key in ['technology', 'triggers', 'actions', 'name_variants']:
+                if key not in keywords:
+                    keywords[key] = []
+            
+            print(f"✅ Generated {sum(len(v) for v in keywords.values())} keywords")
+            return keywords
+            
+        else:
+            print(f"⚠️ Claude Code failed: {result.stderr}")
+            
+    except subprocess.TimeoutExpired:
+        print(f"⚠️ Claude Code timed out")
+    except FileNotFoundError:
+        print(f"⚠️ Claude Code not found in PATH")
+    except Exception as e:
+        print(f"⚠️ Error calling Claude Code: {e}")
     
-    with open(request_file, 'w') as f:
-        f.write(f"SKILL: {name}\n")
-        f.write(f"DESCRIPTION: {description}\n")
-        f.write(f"PROMPT:\n{prompt}\n")
-    
-    print(f"📝 Request written to: {request_file}")
-    print(f"⚠️  This script must be run from within Claude Code to trigger the skill-keyword-manager agent")
-    print(f"⚠️  Agent should process this request and return keywords")
-    
-    # Since we can't actually trigger the agent from a subprocess,
-    # this is where Claude Code should take over and use the Task tool
-    # Return placeholder for now - agent will provide actual keywords
+    # Fallback: return basic keywords
+    print(f"🔄 Using fallback keyword generation...")
     return {
-        "actions": [],
-        "technology": [],
-        "triggers": [],
-        "name_variants": [name.replace('-', '_')]
+        "actions": ["setup", "configure", "create"] if any(word in description.lower() for word in ["setup", "configure", "create"]) else [],
+        "technology": [word for word in ["react", "next.js", "node.js", "auth", "database"] if word.lower() in description.lower()],
+        "triggers": [f"use {name}", f"{name} help"],
+        "name_variants": [name, name.replace('-', '_'), name.replace('-', ' ')]
     }
 
 def compute_skill_hash(name: str, description: str) -> str:
@@ -206,8 +237,9 @@ def main():
     
     # Determine paths
     script_dir = Path(__file__).parent
-    skills_dir = script_dir.parent.parent  # ../.. from scripts/
-    keywords_file = skills_dir / 'skill-keywords.json'
+    skill_manager_dir = script_dir.parent  # .. from scripts/ to skill-keyword-manager/
+    skills_dir = skill_manager_dir.parent  # .. from skill-keyword-manager/ to .claude/skills/
+    keywords_file = skill_manager_dir / 'references' / 'skill-keywords.json'
     
     print(f"Scanning skills in: {skills_dir}")
     print(f"Keywords file: {keywords_file}")

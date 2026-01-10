@@ -163,12 +163,12 @@ copy_skill_system() {
     
     # Copy hook script to hooks directory
     [[ ! -d "$claude_dir/hooks" ]] && mkdir -p "$claude_dir/hooks"
-    cp "$skill_manager_dir/src/references/skill-forced-eval-hook.sh" "$claude_dir/hooks/"
+    cp "$skill_manager_dir/references/skill-forced-eval-hook.sh" "$claude_dir/hooks/"
     
     # Copy skill management slash commands
-    if [[ -d "$skill_manager_dir/src/templates/commands" ]]; then
+    if [[ -d "$skill_manager_dir/templates/commands" ]]; then
         [[ ! -d "$claude_dir/commands" ]] && mkdir -p "$claude_dir/commands"
-        cp "$skill_manager_dir/src/templates/commands/"*.md "$claude_dir/commands/"
+        cp "$skill_manager_dir/templates/commands/"*.md "$claude_dir/commands/"
         log_info "Installed skill management slash commands"
     fi
     
@@ -190,8 +190,8 @@ create_configuration() {
     
     log_info "Creating project configuration..."
     
-    # Create skill-config.json from template
-    local config_file="$claude_dir/skill-config.json"
+    # Create skill-config.json within skill manager directory
+    local config_file="$claude_dir/skills/skill-keyword-manager/skill-config.json"
     cat > "$config_file" << EOF
 {
   "project_root": "$project_root",
@@ -257,19 +257,25 @@ EOF
 # Generate initial keywords
 generate_keywords() {
     local claude_dir="$1"
-    local skill_manager="$claude_dir/skills/skill-keyword-manager"
+    local skill_manager_dir="$claude_dir/skills/skill-keyword-manager"
+    
+    # Check if we're running from the installed location
+    if [[ "$(pwd)" == *"/.claude/skills/"* ]]; then
+        skill_manager_dir="$(pwd)"
+    fi
     
     log_info "Generating initial skill keywords..."
     
-    if [[ -f "$skill_manager/scripts/update_keywords.py" ]]; then
+    if [[ -f "$skill_manager_dir/scripts/update_keywords.py" ]]; then
         cd "$claude_dir"
-        python3 "$skill_manager/scripts/update_keywords.py" || {
+        python3 "$skill_manager_dir/scripts/update_keywords.py" || {
             log_warning "Keyword generation failed - you can run it manually later"
             return 0
         }
         log_success "Initial keywords generated"
     else
         log_warning "Keyword generation script not found"
+        return 1
     fi
 }
 
@@ -296,9 +302,12 @@ main() {
     copy_skill_system "$claude_dir"
     create_configuration "$claude_dir" "$project_root" "$tech_stack"
     update_claude_settings "$claude_dir"
-    generate_keywords "$claude_dir"
-    
-    log_success "Skill system installation completed!"
+    if generate_keywords "$claude_dir"; then
+        log_success "Skill system installation completed!"
+    else
+        log_warning "Installation completed with keyword generation issues"
+        log_info "Run keyword generation manually: python3 ./.claude/skills/skill-keyword-manager/scripts/update_keywords.py"
+    fi
     log_info ""
     log_info "Next steps:"
     log_info "1. Restart Claude Code to load the new hook system"
@@ -310,7 +319,7 @@ main() {
     log_info "   /skill-update   - Update keywords"
     log_info "   /skill-scan     - Audit skill quality"
     log_info "4. Check logs in $claude_dir/logs/skill-activation.log"
-    log_info "5. Customize $claude_dir/skill-config.json for your project"
+    log_info "5. Customize $claude_dir/skills/skill-keyword-manager/skill-config.json for your project"
 }
 
 # Run main function

@@ -70,15 +70,15 @@ The system includes slash commands for skill management:
 ```
 skill-keyword-manager/
 ├── README.md                          # This documentation
+├── install.sh                        # Installation script
 ├── SKILL.md                          # Skill definition for Claude
 ├── scripts/                          # Automation and maintenance
-│   ├── install-skill-system.sh       # Complete installation script
 │   └── update_keywords.py            # Keyword generation and maintenance
 ├── references/                       # System components
 │   ├── skill-forced-eval-hook.sh     # Main hook script
 │   └── skill-config.template.json    # Configuration template
-├── assets/                           # Templates and resources
 └── templates/                        # Project templates
+    └── commands/                      # Slash command definitions
 ```
 
 ## System Components
