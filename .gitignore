@@ -1,0 +1,15 @@
+# Documentation
+docs/
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
+
+# Generated keyword files
+skill-keywords.json
+
+# Claude Code temp files
+/tmp/keyword_request_*.txt
