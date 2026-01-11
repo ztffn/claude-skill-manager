@@ -4,13 +4,52 @@ CLAUDE.md
 
 # macOS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node.js (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (for keyword scripts)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.pytest_cache/
 
 # Temporary files
 *.tmp
 *.log
+*.bak
+*.backup
 
 # Generated keyword files
 skill-keywords.json
+references/skill-keywords.json
 
 # Claude Code temp files
 /tmp/keyword_request_*.txt
+
+# OS generated files
+.directory
+*~
+
+# Build artifacts
+dist/
+build/
