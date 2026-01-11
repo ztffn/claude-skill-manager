@@ -1,14 +1,14 @@
-# Claude Code Skill System 
+# Claude Code Skill System
 
-A complete, self-contained skill management system for Claude Code that provides intelligent skill activation through keyword analysis and AI-powered maintenance.
+A skill management system for Claude Code that provides skill activation through keyword analysis of prompts. Inspired by https://scottspence.com/posts/how-to-make-claude-code-skills-activate-reliably designed to work programmatically to save tokens.
 
 ## Overview
 
-This package contains everything needed to set up a skill system in any Claude Code project. The system automatically detects when users need specific skills based on their prompts and provides intelligent suggestions to Claude.
+This package sets up a skill system in Claude Code projects. The system detects when users need specific skills based on their prompts and suggests relevant skills to Claude.
 
 ## Features
 
-- **Intelligent Skill Detection**: AI-powered keyword matching with context awareness
+- **Skill Detection**: AI-powered keyword matching with context awareness
 - **Portable**: Works in any project with automatic path resolution
 - **Auto-Configuration**: Detects project type and configures appropriate settings
 - **Analytics**: Skill usage logging and probability scoring
@@ -109,7 +109,7 @@ AI-powered keyword generation that:
 
 ### 4. Installation Automation (`scripts/install-skill-system.sh`)
 
-Complete setup automation that:
+Setup automation that:
 - Detects project type and structure
 - Creates necessary directories
 - Configures paths dynamically
@@ -160,7 +160,7 @@ The system uses a sophisticated keyword matching algorithm with priority scoring
 
 ### Matching Algorithm
 
-- **Exact Phrase Matching**: Full priority score for complete phrase matches
+- **Exact Phrase Matching**: Full priority score for exact phrase matches
 - **Compound Word Analysis**: Partial scoring for multi-word phrases
 - **Context Awareness**: Filters common words to reduce false positives
 - **Specificity Priority**: Longer, more specific phrases score higher
@@ -221,7 +221,7 @@ Monitor skill activation in `.claude/logs/skill-activation.log`:
 
 ## Skill Management Commands
 
-The system includes a complete set of slash commands for managing skills without leaving Claude Code:
+The system includes slash commands for managing skills without leaving Claude Code:
 
 ### `/skill-install [--force]`
 
@@ -243,7 +243,7 @@ Install the skill system in the current project with automatic detection of tech
 Display system health, configuration, and recent activity.
 
 ```bash
-/skill-status   # Show complete system status
+/skill-status   # Show system status
 ```
 
 **Information shown:**
@@ -310,7 +310,7 @@ Update skill keywords, metadata, and perform maintenance tasks.
 
 ### `/skill-scan [--fix] [--verbose]`
 
-Comprehensive audit of skill quality, duplicates, and issues.
+Audit of skill quality, duplicates, and issues.
 
 ```bash
 /skill-scan             # Standard quality audit
@@ -442,8 +442,8 @@ This system is designed to be community-driven. Contributions welcome:
 
 ## License
 
-This skill system is designed to be freely shared and adapted. Use it in any project, commercial or open source.
+This skill system is designed to be shared and adapted. Use it in any project, commercial or open source.
 
 ---
 
-**Questions?** Check the skill activation logs and adjust your configuration. The system learns and improves with use.
+Check the skill activation logs and adjust your configuration for troubleshooting.
