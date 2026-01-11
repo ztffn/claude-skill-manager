@@ -440,9 +440,22 @@ This system is designed to be community-driven. Contributions welcome:
 3. **Project Detection**: Support for new technology stacks
 4. **Documentation**: Usage examples and best practices
 
+## Contributing
+
+**Code Style**: 
+- Bash: Use `set -e`, quote variables `"$var"`, 2-space indentation
+- Python: Follow PEP 8, include docstrings, handle errors gracefully
+
+**Security Requirements**:
+- No arbitrary code execution or external network requests
+- Validate all inputs, use secure temp file handling
+- No credential storage, limit access to project directory only
+
+**Bug Reports**: Include system info and logs from `.claude/logs/skill-activation.log`
+
 ## License
 
-This skill system is designed to be shared and adapted. Use it in any project, commercial or open source.
+MIT License - This skill system is designed to be shared and adapted. Use it in any project, commercial or open source.
 
 ---
 
